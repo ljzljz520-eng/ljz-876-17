@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ExamController;
 use App\Http\Controllers\Api\ExamPaperController;
 use App\Http\Controllers\Api\QuestionController;
+use App\Http\Controllers\Api\ScoreAppealController;
 use App\Http\Controllers\Api\ScoreController;
 use Illuminate\Support\Facades\Route;
 
@@ -51,5 +52,20 @@ Route::middleware(['api', 'auth:sanctum', 'throttle:60,1'])->group(function () {
         Route::get('/statistics', [ScoreController::class, 'statistics']);
         Route::get('/ranking/{examPaper}', [ScoreController::class, 'ranking']);
         Route::get('/analysis/{examPaper}', [ScoreController::class, 'analysis']);
+    });
+
+    Route::prefix('appeals')->group(function () {
+        // 学生
+        Route::get('/mine', [ScoreAppealController::class, 'myIndex']);
+        Route::post('/', [ScoreAppealController::class, 'store']);
+        Route::get('/records/{record}/questions', [ScoreAppealController::class, 'recordQuestions']);
+        // 教师 / 教务
+        Route::get('/reviews', [ScoreAppealController::class, 'reviewIndex']);
+        // 通用详情
+        Route::get('/{appeal}', [ScoreAppealController::class, 'show']);
+        // 教师 / 教务复核
+        Route::post('/{appeal}/review', [ScoreAppealController::class, 'review']);
+        // 证据下载
+        Route::get('/{appeal}/evidences/{evidence}/download', [ScoreAppealController::class, 'downloadEvidence']);
     });
 });

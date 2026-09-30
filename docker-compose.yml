@@ -214,6 +214,58 @@ services:
               INDEX idx_question_id (question_id)
           ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='考生答案表';
 
+          CREATE TABLE IF NOT EXISTS score_appeals (
+              id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+              exam_record_id BIGINT UNSIGNED NOT NULL COMMENT '考试记录ID',
+              student_id BIGINT UNSIGNED NOT NULL COMMENT '申诉学生ID',
+              question_id BIGINT UNSIGNED NULL COMMENT '申诉题目ID(整体申诉为空)',
+              type VARCHAR(30) NOT NULL DEFAULT 'score' COMMENT '申诉类型: score-分数 judge-判题 abnormal-异常标记',
+              reason TEXT NOT NULL COMMENT '申诉原因',
+              status VARCHAR(30) NOT NULL DEFAULT 'pending' COMMENT '状态: pending-待复核 transferred-已转教务 closed-复核完成',
+              assigned_to BIGINT UNSIGNED NULL COMMENT '当前处理人ID',
+              submitted_at TIMESTAMP NULL COMMENT '申诉提交时间',
+              closed_at TIMESTAMP NULL COMMENT '复核完成时间',
+              created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+              updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+              INDEX idx_sa_record_id (exam_record_id),
+              INDEX idx_sa_student_id (student_id),
+              INDEX idx_sa_question_id (question_id),
+              INDEX idx_sa_status (status),
+              INDEX idx_sa_assigned_to (assigned_to)
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='成绩申诉表';
+
+          CREATE TABLE IF NOT EXISTS score_appeal_reviews (
+              id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+              score_appeal_id BIGINT UNSIGNED NOT NULL COMMENT '申诉ID',
+              handler_id BIGINT UNSIGNED NOT NULL COMMENT '处理人ID',
+              handler_role VARCHAR(20) NOT NULL COMMENT '处理时角色',
+              action VARCHAR(30) NOT NULL COMMENT '动作: submit-发起 transfer-转交 upheld-维持 add_score-加分 deduct_score-减分',
+              result VARCHAR(30) NULL COMMENT '处理后状态',
+              score_adjustment DECIMAL(6,2) DEFAULT 0.00 COMMENT '分值调整(正加负减)',
+              score_before DECIMAL(6,2) NULL COMMENT '处理前成绩',
+              score_after DECIMAL(6,2) NULL COMMENT '处理后成绩',
+              comment TEXT NULL COMMENT '处理意见',
+              assigned_from BIGINT UNSIGNED NULL COMMENT '转出人ID',
+              assigned_to BIGINT UNSIGNED NULL COMMENT '接收人ID',
+              created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+              updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+              INDEX idx_sar_appeal_id (score_appeal_id),
+              INDEX idx_sar_handler_id (handler_id)
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='申诉复核轨迹表';
+
+          CREATE TABLE IF NOT EXISTS score_appeal_evidences (
+              id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+              score_appeal_id BIGINT UNSIGNED NOT NULL COMMENT '申诉ID',
+              original_name VARCHAR(255) NOT NULL COMMENT '原始文件名',
+              path VARCHAR(500) NOT NULL COMMENT '存储路径',
+              mime_type VARCHAR(100) NULL COMMENT '文件类型',
+              size BIGINT UNSIGNED DEFAULT 0 COMMENT '文件大小(字节)',
+              uploaded_by BIGINT UNSIGNED NOT NULL COMMENT '上传人ID',
+              created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+              updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+              INDEX idx_sae_appeal_id (score_appeal_id)
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='申诉证据表';
+
           CREATE TABLE IF NOT EXISTS cache (
               `key` VARCHAR(255) NOT NULL PRIMARY KEY,
               `value` MEDIUMTEXT NOT NULL,

@@ -70,4 +70,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(ExamRecord::class, 'user_id');
     }
+
+    public function appeals()
+    {
+        return $this->hasMany(ScoreAppeal::class, 'student_id');
+    }
+
+    public function assignedAppeals()
+    {
+        return $this->hasMany(ScoreAppeal::class, 'assigned_to');
+    }
 }

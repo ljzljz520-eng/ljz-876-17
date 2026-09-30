@@ -51,4 +51,14 @@ class ExamRecord extends Model
     {
         return $this->hasMany(ExamRecordAnswer::class, 'exam_record_id');
     }
+
+    public function appeals()
+    {
+        return $this->hasMany(ScoreAppeal::class, 'exam_record_id');
+    }
+
+    public function latestAppeal()
+    {
+        return $this->hasOne(ScoreAppeal::class, 'exam_record_id')->latestOfMany();
+    }
 }

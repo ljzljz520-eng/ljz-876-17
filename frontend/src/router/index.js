@@ -39,6 +39,18 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/appeals',
+    name: 'MyAppeals',
+    component: () => import('../views/appeals/MyAppeals.vue'),
+    meta: { requiresAuth: true, roles: ['student'] }
+  },
+  {
+    path: '/appeal-reviews',
+    name: 'AppealReviews',
+    component: () => import('../views/appeals/ReviewQueue.vue'),
+    meta: { requiresAuth: true, roles: ['admin', 'teacher'] }
+  },
+  {
     path: '/questions',
     name: 'Questions',
     component: () => import('../views/questions/Index.vue'),

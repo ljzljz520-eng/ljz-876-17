@@ -158,7 +158,7 @@ class ExamController extends Controller
 
     public function myRecords(Request $request)
     {
-        $records = ExamRecord::with('examPaper')
+        $records = ExamRecord::with(['examPaper', 'latestAppeal'])
             ->where('user_id', $request->user()->id)
             ->orderBy('id', 'desc')
             ->paginate($perPage = $request->input('per_page', 15));
@@ -174,7 +174,12 @@ class ExamController extends Controller
             return response()->json(['message' => '无权查看此记录'], 403);
         }
 
-        $record->load(['examPaper.questions', 'answers.question']);
+        $record->load([
+            'examPaper.questions',
+            'answers.question',
+            'appeals.question',
+            'appeals.reviews.handler:id,username,real_name,role',
+        ]);
 
         return response()->json([
             'record' => $record,
