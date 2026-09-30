@@ -30,6 +30,10 @@ RUN composer create-project --prefer-dist laravel/laravel . --no-interaction
 # 复制应用代码（覆盖默认文件）
 COPY . .
 
+# 容器启动前置脚本（等待数据库 + 自动迁移）
+RUN chmod +x docker-entrypoint.sh \
+    && cp php-uploads.ini /usr/local/etc/php/conf.d/zz-uploads.ini
+
 # 配置环境并安装 Sanctum
 RUN cp .env.example .env 2>/dev/null || true \
     && php artisan key:generate --ansi 2>/dev/null || true \
@@ -39,4 +43,5 @@ RUN cp .env.example .env 2>/dev/null || true \
 
 EXPOSE 8080
 
+ENTRYPOINT ["./docker-entrypoint.sh"]
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]

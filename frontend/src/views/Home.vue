@@ -25,7 +25,7 @@
         <span class="w-1.5 h-6 bg-indigo-500 rounded-full mr-3 shadow-sm shadow-indigo-300"></span>
         学生功能
       </h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <router-link to="/exams" class="card-base card-accent-left card-accent-blue p-6 group h-full hover:bg-blue-50/10 dark:hover:bg-blue-900/10">
           <div class="flex items-start h-full">
             <div class="flex-shrink-0 w-14 h-14 bg-blue-100/80 rounded-2xl flex items-center justify-center mr-5 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 shadow-sm">
@@ -63,6 +63,25 @@
             </div>
           </div>
         </router-link>
+
+        <router-link to="/my-appeals" class="card-base card-accent-left card-accent-rose p-6 group h-full hover:bg-rose-50/10">
+          <div class="flex items-start h-full">
+            <div class="flex-shrink-0 w-14 h-14 bg-rose-100/80 rounded-2xl flex items-center justify-center mr-5 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 shadow-sm">
+              <svg class="w-7 h-7 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.56 5.313c-.35-2.578-4.917-2.578-5.267 0C5.944 7.806 4.168 9.87 2.122 10.43c-2.49.68-2.49 3.124 0 3.803 2.046.56 3.822 2.625 4.17 5.118.35 2.578 4.917 2.578 5.267 0 .349-2.493 2.125-4.558 4.17-5.118 2.49-.68 2.49-3.124 0-3.803-2.045-.56-3.821-2.625-4.17-5.118zM19.133 14a24.096 24.096 0 011.39 3.42c.35 2.578-3.367 2.578-3.717 0a24.068 24.068 0 00-1.39-3.42M16.5 5.5c.27-.727.928-1.188 1.65-1.188" />
+              </svg>
+            </div>
+            <div class="flex-1 flex flex-col justify-between">
+              <div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-rose-700 transition-colors">成绩申诉</h3>
+                <p class="text-gray-500 text-sm leading-relaxed">对分数、判题或异常标记有异议时，选择题目、说明原因并上传证据，跟踪复核轨迹。</p>
+              </div>
+              <div class="mt-4 flex items-center text-sm font-medium text-rose-600 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                我的申诉 <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+              </div>
+            </div>
+          </div>
+        </router-link>
       </div>
     </div>
 
@@ -71,7 +90,7 @@
         <span class="w-1.5 h-6 bg-purple-500 rounded-full mr-3 shadow-sm shadow-purple-300"></span>
         教师管理
       </h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <router-link to="/questions" class="card-base card-accent-left card-accent-purple p-6 group h-full hover:bg-purple-50/10">
           <div class="flex items-start h-full">
             <div class="flex-shrink-0 w-14 h-14 bg-purple-100/80 rounded-2xl flex items-center justify-center mr-5 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300 shadow-sm">
@@ -110,6 +129,25 @@
           </div>
         </router-link>
         
+        <router-link to="/appeals/review" class="card-base card-accent-left card-accent-rose p-6 group h-full hover:bg-rose-50/10">
+          <div class="flex items-start h-full">
+            <div class="flex-shrink-0 w-14 h-14 bg-rose-100/80 rounded-2xl flex items-center justify-center mr-5 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 shadow-sm">
+              <svg class="w-7 h-7 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div class="flex-1 flex flex-col justify-between">
+              <div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-rose-700 transition-colors">申诉复核</h3>
+                <p class="text-gray-500 text-sm leading-relaxed">复核学生成绩申诉：维持、加分、减分或转教务，处理意见全程留档。</p>
+              </div>
+              <div class="mt-4 flex items-center text-sm font-medium text-rose-600 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                去复核 <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+              </div>
+            </div>
+          </div>
+        </router-link>
+
         <router-link v-if="authStore.isAdmin" to="/statistics" class="card-base card-accent-left card-accent-blue p-6 group h-full hover:bg-sky-50/10">
           <div class="flex items-start h-full">
             <div class="flex-shrink-0 w-14 h-14 bg-sky-100/80 rounded-2xl flex items-center justify-center mr-5 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300 shadow-sm">

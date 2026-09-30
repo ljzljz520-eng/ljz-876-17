@@ -44,6 +44,11 @@ api.interceptors.response.use(
       error.message ||
       '网络请求失败，请稍后重试'
 
+    // 调用方可通过 config.skipGlobalError 自行处理错误（如表单内联校验）
+    if (error.config?.skipGlobalError) {
+      return Promise.reject(error)
+    }
+
     if (status === 422 || status === 403 || status >= 500) {
       modalState.title = '错误'
       modalState.message = message

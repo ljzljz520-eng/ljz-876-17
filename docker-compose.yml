@@ -226,6 +226,57 @@ services:
               `owner` VARCHAR(255) NOT NULL,
               `expiration` INT NOT NULL
           ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Laravel缓存锁表';
+
+          CREATE TABLE IF NOT EXISTS score_appeals (
+              id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+              exam_record_id BIGINT UNSIGNED NOT NULL COMMENT '考试记录ID',
+              question_id BIGINT UNSIGNED NULL COMMENT '申诉题目ID(NULL=整卷申诉)',
+              student_id BIGINT UNSIGNED NOT NULL COMMENT '申诉学生ID',
+              appeal_type VARCHAR(20) NOT NULL DEFAULT 'score' COMMENT '申诉类型: score-分数 scoring-判题 abnormal-异常标记',
+              reason TEXT NOT NULL COMMENT '申诉原因',
+              status VARCHAR(20) NOT NULL DEFAULT 'pending' COMMENT '状态: pending-待复核 to_academic-已转教务 completed-复核完成',
+              original_score DECIMAL(6,2) NULL COMMENT '申诉前总分',
+              final_score DECIMAL(6,2) NULL COMMENT '复核后总分',
+              score_adjustment DECIMAL(6,2) NULL COMMENT '分数调整值(正为加分,负为减分)',
+              final_result VARCHAR(20) NULL COMMENT '最终结论: maintain-维持 add-加分 deduct-减分 transfer-转教务',
+              closed_by BIGINT UNSIGNED NULL COMMENT '复核结案人ID',
+              closed_at TIMESTAMP NULL COMMENT '结案时间',
+              created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+              updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+              INDEX idx_sa_exam_record_id (exam_record_id),
+              INDEX idx_sa_question_id (question_id),
+              INDEX idx_sa_student_id (student_id),
+              INDEX idx_sa_status (status),
+              INDEX idx_sa_appeal_type (appeal_type)
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='成绩申诉表';
+
+          CREATE TABLE IF NOT EXISTS score_appeal_evidences (
+              id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+              score_appeal_id BIGINT UNSIGNED NOT NULL COMMENT '申诉ID',
+              original_name VARCHAR(255) NOT NULL COMMENT '原始文件名',
+              path VARCHAR(255) NOT NULL COMMENT '存储路径',
+              mime_type VARCHAR(100) NULL COMMENT '文件MIME类型',
+              size BIGINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '文件大小(字节)',
+              uploaded_by BIGINT UNSIGNED NOT NULL COMMENT '上传人ID',
+              created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+              updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+              INDEX idx_sae_appeal_id (score_appeal_id)
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='申诉证据附件表';
+
+          CREATE TABLE IF NOT EXISTS score_appeal_reviews (
+              id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+              score_appeal_id BIGINT UNSIGNED NOT NULL COMMENT '申诉ID',
+              reviewer_id BIGINT UNSIGNED NOT NULL COMMENT '处理人ID',
+              reviewer_role VARCHAR(20) NOT NULL COMMENT '处理人角色: teacher/admin',
+              action VARCHAR(20) NOT NULL COMMENT '处理动作: maintain-维持 add-加分 deduct-减分 transfer-转教务',
+              `comment` TEXT NULL COMMENT '处理意见',
+              score_adjustment DECIMAL(6,2) NULL COMMENT '本次调整分值',
+              score_after DECIMAL(6,2) NULL COMMENT '处理后总分',
+              created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+              updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+              INDEX idx_sar_appeal_id (score_appeal_id),
+              INDEX idx_sar_reviewer_id (reviewer_id)
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='申诉复核处理轨迹表';
           SQL
 
           echo "Database initialized from inline schema."
@@ -262,6 +313,14 @@ services:
         condition: service_healthy
       db-init:
         condition: service_completed_successfully
+    entrypoint:
+      - ./docker-entrypoint.sh
+    command:
+      - php
+      - artisan
+      - serve
+      - --host=0.0.0.0
+      - --port=8080
     networks:
       - exam-network
     ports:

@@ -100,12 +100,28 @@
               >
                 在线考试
               </router-link>
-              <router-link 
-                to="/records" 
+              <router-link
+                to="/records"
                 class="nav-link"
                 :class="{ 'nav-link-active': $route.path === '/records' }"
               >
                 我的成绩
+              </router-link>
+              <router-link
+                v-if="authStore.user?.role === 'student'"
+                to="/my-appeals"
+                class="nav-link"
+                :class="{ 'nav-link-active': $route.path === '/my-appeals' }"
+              >
+                我的申诉
+              </router-link>
+              <router-link
+                v-if="authStore.isTeacher"
+                to="/appeals/review"
+                class="nav-link"
+                :class="{ 'nav-link-active': $route.path === '/appeals/review' }"
+              >
+                申诉复核
               </router-link>
               <router-link 
                 v-if="authStore.isTeacher" 
@@ -155,6 +171,8 @@
         <div class="px-2 py-2 space-y-1">
           <router-link to="/exams" class="mobile-nav-link" :class="{ 'mobile-nav-link-active': $route.path === '/exams' }">在线考试</router-link>
           <router-link to="/records" class="mobile-nav-link" :class="{ 'mobile-nav-link-active': $route.path === '/records' }">我的成绩</router-link>
+          <router-link v-if="authStore.user?.role === 'student'" to="/my-appeals" class="mobile-nav-link" :class="{ 'mobile-nav-link-active': $route.path === '/my-appeals' }">我的申诉</router-link>
+          <router-link v-if="authStore.isTeacher" to="/appeals/review" class="mobile-nav-link" :class="{ 'mobile-nav-link-active': $route.path === '/appeals/review' }">申诉复核</router-link>
           <router-link v-if="authStore.isTeacher" to="/questions" class="mobile-nav-link" :class="{ 'mobile-nav-link-active': $route.path === '/questions' }">题库管理</router-link>
           <router-link v-if="authStore.isTeacher" to="/exam-papers" class="mobile-nav-link" :class="{ 'mobile-nav-link-active': $route.path === '/exam-papers' }">试卷管理</router-link>
           <router-link v-if="authStore.isAdmin" to="/statistics" class="mobile-nav-link" :class="{ 'mobile-nav-link-active': $route.path === '/statistics' }">数据统计</router-link>

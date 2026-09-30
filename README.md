@@ -131,3 +131,36 @@ docker compose exec backend sh -lc "curl -s -X POST http://localhost:8080/api/au
 ---
 如需进行质检修复闭环，请配合 `qa/qc-feedback-inbox.md`、`qa/qc-fix-send-template.md`、`qa/qc-fix-loop-template.md` 使用。
 
+
+## 成绩申诉复核轨迹（新增）
+
+### 功能说明
+学生对成绩有异议时可发起申诉，教师与教务（Admin）逐级复核，全程留痕：
+
+1. **学生发起申诉**：在「我的成绩」中对已评分记录点击「成绩申诉」，可选择具体题目或整卷申诉，
+   填写申诉原因并上传证据（jpg/png/pdf/doc/docx/txt/zip，最多 5 个、单个 10MB 以内）。
+   - 申诉类型：分数异议 / 判题异议 / 异常标记。
+2. **教师复核**：在「申诉复核」页处理待办，可选择 **维持、加分、减分、转教务**，
+   处理意见必填并留档；单题申诉按题目分值调整并重算总分，整卷申诉直接调整总分（自动夹在 0~试卷总分）。
+3. **教务终裁**：被转教务的申诉仅教务（Admin）可处理，可维持/加分/减分，不能再次转办。
+4. **成绩单状态**：无论维持、加分、减分还是转教务后终裁，申诉处理完毕后成绩单统一显示 **「复核完成」**；
+   处理中显示「复核中」。
+5. **复核轨迹**：申诉详情按时间线展示每一位处理人（教师/教务）的动作、调整分值、处理后总分与意见，
+   学生与处理人均可查看；证据附件通过鉴权接口下载。
+
+### 数据模型（新增 3 张表）
+- `score_appeals`：申诉单（题目、类型、原因、状态、原分/终分/调整值、最终结论、结案人）。
+- `score_appeal_evidences`：申诉证据附件。
+- `score_appeal_reviews`：复核处理轨迹（每个处理人的动作与意见）。
+
+### 主要接口
+| 方法 | 路径 | 说明 |
+|---|---|---|
+| POST | `/api/score-appeals` | 学生提交申诉（multipart，含证据） |
+| GET | `/api/score-appeals/mine` | 学生查看自己的申诉与轨迹 |
+| GET | `/api/score-appeals/review` | 教师/教务复核列表（支持 status/type/keyword） |
+| GET | `/api/score-appeals/{id}` | 申诉详情（鉴权） |
+| POST | `/api/score-appeals/{id}/review` | 复核动作：maintain/add/deduct/transfer |
+| GET | `/api/score-appeals/evidences/{id}/download` | 证据下载（鉴权） |
+
+> 后端容器启动时会自动执行 `php artisan migrate --force`，为既有数据库补齐新表。

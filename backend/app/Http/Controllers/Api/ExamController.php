@@ -158,10 +158,17 @@ class ExamController extends Controller
 
     public function myRecords(Request $request)
     {
-        $records = ExamRecord::with('examPaper')
+        $records = ExamRecord::with(['examPaper', 'appeals'])
             ->where('user_id', $request->user()->id)
             ->orderBy('id', 'desc')
             ->paginate($perPage = $request->input('per_page', 15));
+
+        $records->getCollection()->transform(function ($record) {
+            $record->appeal_summary = $record->appealSummary();
+            // 汇总信息已单独输出，隐藏申诉明细，避免成绩单列表冗余
+            $record->unsetRelation('appeals');
+            return $record;
+        });
 
         return response()->json([
             'records' => $records,
@@ -174,7 +181,9 @@ class ExamController extends Controller
             return response()->json(['message' => '无权查看此记录'], 403);
         }
 
-        $record->load(['examPaper.questions', 'answers.question']);
+        $record->load(['examPaper.questions', 'answers.question', 'appeals']);
+        $record->appeal_summary = $record->appealSummary();
+        $record->unsetRelation('appeals');
 
         return response()->json([
             'record' => $record,
